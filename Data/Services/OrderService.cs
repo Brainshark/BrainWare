@@ -1,6 +1,7 @@
 ﻿using Data.Models;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Data.Services
 {
@@ -13,9 +14,10 @@ namespace Data.Services
             _dbService = dbService;
         }
 
-        public List<Order> GetOrdersForCompany(int companyId)
+        public IEnumerable<Order> GetOrdersForCompany(int companyId)
         {
             // Get the orders
+            // todo tokenize
             var sql1 =
                 @"SELECT 
                     c.name, 

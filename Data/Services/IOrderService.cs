@@ -5,6 +5,6 @@ namespace Data.Services
 {
     public interface IOrderService
     {
-        List<Order> GetOrdersForCompany(int companyId);
+        IEnumerable<Order> GetOrdersForCompany(int companyId);
     }
 }
