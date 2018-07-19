@@ -8,6 +8,6 @@ namespace Data.Models
         public string CompanyName { get; set; }
         public string Description { get; set; }
         public decimal OrderTotal { get; set; }
-        public List<OrderProduct> OrderProducts { get; set; }
+        public IEnumerable<OrderProduct> OrderProducts { get; set; }
     }
 }
