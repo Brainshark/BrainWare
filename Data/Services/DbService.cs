@@ -3,11 +3,11 @@ using System.Data.SqlClient;
 
 namespace Data.Services
 {
-    public class Database
+    public class DbService : IDbService
     {
         private readonly SqlConnection _connection;
 
-        public Database()
+        public DbService()
         {
             _connection = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;Initial Catalog=BrainWAre;Integrated Security=SSPI;AttachDBFilename=C:\\brainshark\\BrainWare\\Web\\App_Data\\BrainWare.mdf");
 

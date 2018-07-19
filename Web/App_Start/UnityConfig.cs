@@ -11,6 +11,7 @@ namespace Web
         {
 			var container = new UnityContainer();
             container.RegisterType<IOrderService, OrderService>();
+            container.RegisterType<IDbService, DbService>();
 
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
         }

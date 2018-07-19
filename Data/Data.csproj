@@ -41,7 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\OrderProduct.cs" />
-    <Compile Include="Services\Database.cs" />
+    <Compile Include="Services\DbService.cs" />
+    <Compile Include="Services\IDbService.cs" />
     <Compile Include="Services\IOrderService.cs" />
     <Compile Include="Services\OrderService.cs" />
     <Compile Include="Models\Order.cs" />
