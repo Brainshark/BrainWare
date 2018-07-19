@@ -1,11 +1,9 @@
-﻿using Data.Models;
-using Data.Services;
-using System.Collections.Generic;
+﻿using Data.Services;
 using System.Web.Http;
 
 namespace Web.Controllers
 {
-    // todo add route prefix etc
+    [RoutePrefix("api/orders")]
     public class OrderController : ApiController
     {
         private readonly IOrderService _orderService;
@@ -16,9 +14,10 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Order> GetOrders(int id = 1)
+        [Route("{id}")]
+        public IHttpActionResult GetOrders(int id = 1)
         {
-            return _orderService.GetOrdersForCompany(id);
+            return Ok(_orderService.GetOrdersForCompany(id));
         }
     }
 }
