@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Data.Models;
+using System.Collections.Generic;
+using System.Data;
 
-namespace Web.Infrastructure
+namespace Data.Services
 {
-    using System.Data;
-    using Models;
-
     public class OrderService
     {
         public List<Order> GetOrdersForCompany(int CompanyId)

@@ -1,8 +1,8 @@
-﻿namespace Web.Infrastructure
-{
-    using System.Data.Common;
-    using System.Data.SqlClient;
+﻿using System.Data.Common;
+using System.Data.SqlClient;
 
+namespace Data.Services
+{
     public class Database
     {
         private readonly SqlConnection _connection;

@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Data.Models;
+using Data.Services;
+using System.Collections.Generic;
 using System.Web.Http;
 
 namespace Web.Controllers
 {
-    using System.Web.Mvc;
-    using Infrastructure;
-    using Models;
-
     // todo add route prefix etc
     public class OrderController : ApiController
     {
