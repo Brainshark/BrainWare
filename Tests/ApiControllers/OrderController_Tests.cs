@@ -28,7 +28,7 @@ namespace Tests.ApiControllers
             // GIVEN we have orders
             const int testId = 1;
             var expectedOrders = _fixture.CreateMany<Order>(5).ToList();
-            _orderServiceMock.Setup(x => x.GetOrdersForCompany(It.IsAny<int>()))
+            _orderServiceMock.Setup(x => x.GetOrdersForCompany(testId))
                 .Returns(expectedOrders);
             
             // WHEN I get those orders
