@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Web.Infrastructure
+﻿namespace Web.Infrastructure
 {
     using System.Data.Common;
     using System.Data.SqlClient;
@@ -14,16 +9,14 @@ namespace Web.Infrastructure
 
         public Database()
         {
-            _connection = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;Initial Catalog=BrainWAre;Integrated Security=SSPI;AttachDBFilename=D:\\BrainWare\\Web\\App_Data\\BrainWare.mdf");
+            _connection = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;Initial Catalog=BrainWAre;Integrated Security=SSPI;AttachDBFilename=C:\\brainshark\\BrainWare\\Web\\App_Data\\BrainWare.mdf");
 
             _connection.Open();
         }
 
 
         public DbDataReader ExecuteReader(string query)
-        {
-           
-
+        {       
             var sqlQuery = new SqlCommand(query, _connection);
 
             return sqlQuery.ExecuteReader();
