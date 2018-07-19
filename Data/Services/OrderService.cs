@@ -13,7 +13,7 @@ namespace Data.Services
             _dbService = dbService;
         }
 
-        public List<Order> GetOrdersForCompany(int CompanyId)
+        public List<Order> GetOrdersForCompany(int companyId)
         {
             // Get the orders
             var sql1 =
