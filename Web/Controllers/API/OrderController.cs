@@ -8,12 +8,17 @@ namespace Web.Controllers
     // todo add route prefix etc
     public class OrderController : ApiController
     {
+        private readonly IOrderService _orderService;
+
+        public OrderController(IOrderService orderService)
+        {
+            _orderService = orderService;
+        }
+
         [HttpGet]
         public IEnumerable<Order> GetOrders(int id = 1)
         {
-            var data = new OrderService();
-
-            return data.GetOrdersForCompany(id);
+            return _orderService.GetOrdersForCompany(id);
         }
     }
 }

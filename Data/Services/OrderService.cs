@@ -4,7 +4,7 @@ using System.Data;
 
 namespace Data.Services
 {
-    public class OrderService
+    public class OrderService : IOrderService
     {
         public List<Order> GetOrdersForCompany(int CompanyId)
         {
