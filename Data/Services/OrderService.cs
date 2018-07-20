@@ -56,7 +56,7 @@ namespace Data.Services
                             CompanyName = record["name"].ToString(),
                             Description = record["description"].ToString(),
                             OrderId = int.Parse(record["order_id"].ToString()),
-                            OrderTotal = decimal.Parse(record["ProductPrice"].ToString()),
+                            OrderTotal = ComputerOrderTotalPerRow(record),
                             OrderProducts = new List<OrderProduct>
                             {
                                 GetOrderProduct(record)
@@ -67,7 +67,7 @@ namespace Data.Services
                     }
                     else
                     {
-                        orderDict[orderId].OrderTotal += decimal.Parse(record["OrderPrice"].ToString());
+                        orderDict[orderId].OrderTotal += ComputerOrderTotalPerRow(record);
                         orderDict[orderId].OrderProducts.Add(GetOrderProduct(record));
                     }
 
@@ -78,6 +78,14 @@ namespace Data.Services
                 return orders;
             }
             
+        }
+
+        private decimal ComputerOrderTotalPerRow(IDataRecord record)
+        {
+            var quantity = int.Parse(record["quantity"].ToString());
+            var price = decimal.Parse(record["OrderPrice"].ToString());
+
+            return price * quantity;
         }
 
         private OrderProduct GetOrderProduct(IDataRecord record)
