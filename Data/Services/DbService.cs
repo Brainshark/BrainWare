@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Data.Services
             _connection.Open();
         }
 
-        public DbDataReader ExecuteReader(string query, IDictionary<string, string> parameters = null)
+        public IDataReader ExecuteReader(string query, IDictionary<string, string> parameters = null)
         {       
             var sqlQuery = new SqlCommand(query, _connection);
             if (parameters != null && parameters.Keys.Any())

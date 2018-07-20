@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 
 namespace Data.Services
@@ -6,6 +7,6 @@ namespace Data.Services
     public interface IDbService
     {
         int ExecuteNonQuery(string query);
-        DbDataReader ExecuteReader(string query, IDictionary<string, string> parameters = null);
+        IDataReader ExecuteReader(string query, IDictionary<string, string> parameters = null);
     }
 }
