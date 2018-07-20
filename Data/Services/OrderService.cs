@@ -24,8 +24,8 @@ namespace Data.Services
                     c.name, 
                     o.description, 
                     o.order_id 
-                    FROM company c 
-                    INNER JOIN [order] o 
+                    FROM [order] o
+                    INNER JOIN [company] c
                         ON c.company_id = o.company_id
                     WHERE o.company_id = @companyId";
 
