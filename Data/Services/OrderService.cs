@@ -1,6 +1,7 @@
 ﻿using Data.Models;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace Data.Services
@@ -25,9 +26,15 @@ namespace Data.Services
                     o.order_id 
                     FROM company c 
                     INNER JOIN [order] o 
-                        ON c.company_id = o.company_id";
+                        ON c.company_id = o.company_id
+                    WHERE o.company_id = @companyId";
 
-            var reader1 = _dbService.ExecuteReader(sql1);
+            var command = new SqlCommand(sql1);
+            command.Parameters.AddWithValue("@companyId", companyId);
+
+            var reader1 = _dbService.ExecuteReader(sql1, new Dictionary<string, string> {
+                { "companyId", companyId.ToString() }
+            });
             var orders = new List<Order>();          
             while (reader1.Read())
             {

@@ -1,5 +1,7 @@
-﻿using System.Data.Common;
+﻿using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace Data.Services
 {
@@ -14,10 +16,16 @@ namespace Data.Services
             _connection.Open();
         }
 
-
-        public DbDataReader ExecuteReader(string query)
+        public DbDataReader ExecuteReader(string query, IDictionary<string, string> parameters = null)
         {       
             var sqlQuery = new SqlCommand(query, _connection);
+            if (parameters != null && parameters.Keys.Any())
+            {
+                foreach(var key in parameters.Keys)
+                {
+                    sqlQuery.Parameters.AddWithValue(key, parameters[key]);
+                }
+            }
 
             return sqlQuery.ExecuteReader();
         }
