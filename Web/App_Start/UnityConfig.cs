@@ -1,7 +1,8 @@
 using Data.Services;
 using System.Web.Http;
+using System.Web.Mvc;
 using Unity;
-using Unity.WebApi;
+using Unity.Mvc5;
 
 namespace Web
 {
@@ -13,7 +14,8 @@ namespace Web
             container.RegisterType<IOrderService, OrderService>();
             container.RegisterType<IDbService, DbService>();
 
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
+            DependencyResolver.SetResolver(new UnityDependencyResolver(container));
+            GlobalConfiguration.Configuration.DependencyResolver = new Unity.WebApi.UnityDependencyResolver(container);
         }
     }
 }

@@ -1,0 +1,26 @@
+﻿@model IEnumerable<Data.Models.Order>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Your Orders</h2>
+        <div id="orders">
+            @foreach (var order in Model)
+            {
+                <ul>
+                    <li>
+                        @order.Description (Total $@order.OrderTotal)
+                        @foreach(var product in order.OrderProducts)
+                        {
+                            <ul>
+                                <li>
+                                    @product.Product.Name (@product.Quantity @@ @product.Price/ea)
+                                </li>
+                            </ul>
+                        }
+                    </li>
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+
