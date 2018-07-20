@@ -18,87 +18,82 @@ namespace Data.Services
         public IEnumerable<Order> GetOrdersForCompany(int companyId)
         {
             // Get the orders
-            // todo tokenize
-            var sql1 =
-                @"SELECT 
+            var sql =
+                @"SELECT
                     c.name, 
                     o.description, 
-                    o.order_id 
-                    FROM [order] o
-                    INNER JOIN [company] c
-                        ON c.company_id = o.company_id
-                    WHERE o.company_id = @companyId";
-
-            var command = new SqlCommand(sql1);
-            command.Parameters.AddWithValue("@companyId", companyId);
-
-            var reader1 = _dbService.ExecuteReader(sql1, new Dictionary<string, string> {
-                { "companyId", companyId.ToString() }
-            });
-            var orders = new List<Order>();          
-            while (reader1.Read())
-            {
-                var record1 = (IDataRecord) reader1;
-                orders.Add(new Order()
-                {
-                    CompanyName = record1.GetString(0),
-                    Description = record1.GetString(1),
-                    OrderId = record1.GetInt32(2),
-                    OrderProducts = new List<OrderProduct>()
-                });
-            }
-            reader1.Close();
-
-            //Get the order products
-            var sql2 =
-                @"SELECT 
-                    op.price, 
+                    o.order_id,
+                    op.price OrderPrice, 
                     op.order_id, 
                     op.product_id, 
                     op.quantity, 
-                    p.name, 
-                    p.price 
-                    FROM orderproduct op 
-                    INNER JOIN product p 
-                        ON op.product_id = p.product_id";
+                    p.name ProductName, 
+                    p.price ProductPrice
+                    FROM [order] o
+                    INNER JOIN [company] c
+                        ON c.company_id = o.company_id
+                    INNER JOIN [orderproduct] op
+                        ON op.order_id = o.order_id
+                    INNER JOIN [product] p
+                        ON p.product_id = op.product_id
+                    WHERE o.company_id = @companyId";
 
-            var reader2 = _dbService.ExecuteReader(sql2);
-            var orderProducts = new List<OrderProduct>();
-
-            while (reader2.Read())
+            var paramDict = new Dictionary<string, string> {
+                { "companyId", companyId.ToString() }
+            };
+            using (var reader = _dbService.ExecuteReader(sql, paramDict))
             {
-                var record2 = (IDataRecord)reader2;
-                orderProducts.Add(new OrderProduct()
+                var orderDict = new Dictionary<int, Order>();
+                while (reader.Read())
                 {
-                    OrderId = record2.GetInt32(1),
-                    ProductId = record2.GetInt32(2),
-                    Price = record2.GetDecimal(0),
-                    Quantity = record2.GetInt32(3),
-                    Product = new Product()
+                    var record = (IDataRecord)reader;
+                    var orderId = int.Parse(record["order_id"].ToString());
+                    var productId = int.Parse(record["product_id"].ToString());
+                    if (!orderDict.ContainsKey(orderId))
                     {
-                        Name = record2.GetString(4),
-                        Price = record2.GetDecimal(5)
+                        var order = new Order()
+                        {
+                            CompanyName = record["name"].ToString(),
+                            Description = record["description"].ToString(),
+                            OrderId = int.Parse(record["order_id"].ToString()),
+                            OrderTotal = decimal.Parse(record["ProductPrice"].ToString()),
+                            OrderProducts = new List<OrderProduct>
+                            {
+                                GetOrderProduct(record)
+                            }
+                        };
+
+                        orderDict.Add(orderId, order);
                     }
-                });
-             }
-
-            reader2.Close();
-
-            foreach (var order in orders)
-            {
-                foreach (var orderproduct in orderProducts)
-                {
-                    if (orderproduct.OrderId != order.OrderId)
+                    else
                     {
-                        continue;
+                        orderDict[orderId].OrderTotal += decimal.Parse(record["OrderPrice"].ToString());
+                        orderDict[orderId].OrderProducts.Add(GetOrderProduct(record));
                     }
 
-                    order.OrderProducts.Add(orderproduct);
-                    order.OrderTotal = order.OrderTotal + (orderproduct.Price * orderproduct.Quantity);
                 }
-            }
+                reader.Close();
 
-            return orders;
+                var orders = orderDict.Values.ToList();
+                return orders;
+            }
+            
+        }
+
+        private OrderProduct GetOrderProduct(IDataRecord record)
+        {
+            return new OrderProduct
+            {
+                OrderId = int.Parse(record["order_id"].ToString()),
+                ProductId = int.Parse(record["product_id"].ToString()),
+                Product = new Product
+                {
+                    Name = record["ProductName"].ToString(),
+                    Price = decimal.Parse(record["ProductPrice"].ToString())
+                },
+                Quantity = int.Parse(record["quantity"].ToString()),
+                Price = decimal.Parse(record["OrderPrice"].ToString())
+            };
         }
     }
 }
