@@ -23,7 +23,6 @@ namespace Data.Services
                     o.description, 
                     o.order_id,
                     op.price OrderPrice, 
-                    op.order_id, 
                     op.product_id, 
                     op.quantity, 
                     p.name ProductName, 
