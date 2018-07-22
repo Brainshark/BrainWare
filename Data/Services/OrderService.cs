@@ -39,43 +39,48 @@ namespace Data.Services
             var paramDict = new Dictionary<string, string> {
                 { "companyId", companyId.ToString() }
             };
+
             using (var reader = _dbService.ExecuteReader(sql, paramDict))
             {
-                var orderDict = new Dictionary<int, Order>();
-                while (reader.Read())
+                return GetOrders(reader);
+            }
+
+        }
+
+        private IEnumerable<Order> GetOrders(IDataReader reader)
+        {
+            var orderDict = new Dictionary<int, Order>();
+            while (reader.Read())
+            {
+                var record = (IDataRecord)reader;
+                var orderId = int.Parse(record["order_id"].ToString());
+                var productId = int.Parse(record["product_id"].ToString());
+                if (!orderDict.ContainsKey(orderId))
                 {
-                    var record = (IDataRecord)reader;
-                    var orderId = int.Parse(record["order_id"].ToString());
-                    var productId = int.Parse(record["product_id"].ToString());
-                    if (!orderDict.ContainsKey(orderId))
+                    var order = new Order()
                     {
-                        var order = new Order()
-                        {
-                            CompanyName = record["name"].ToString(),
-                            Description = record["description"].ToString(),
-                            OrderId = int.Parse(record["order_id"].ToString()),
-                            OrderTotal = ComputerOrderTotalPerRow(record),
-                            OrderProducts = new List<OrderProduct>
+                        CompanyName = record["name"].ToString(),
+                        Description = record["description"].ToString(),
+                        OrderId = int.Parse(record["order_id"].ToString()),
+                        OrderTotal = ComputerOrderTotalPerRow(record),
+                        OrderProducts = new List<OrderProduct>
                             {
                                 GetOrderProduct(record)
                             }
-                        };
+                    };
 
-                        orderDict.Add(orderId, order);
-                    }
-                    else
-                    {
-                        orderDict[orderId].OrderTotal += ComputerOrderTotalPerRow(record);
-                        orderDict[orderId].OrderProducts.Add(GetOrderProduct(record));
-                    }
-
+                    orderDict.Add(orderId, order);
                 }
-                reader.Close();
+                else
+                {
+                    orderDict[orderId].OrderTotal += ComputerOrderTotalPerRow(record);
+                    orderDict[orderId].OrderProducts.Add(GetOrderProduct(record));
+                }
 
-                var orders = orderDict.Values.ToList();
-                return orders;
             }
-            
+
+            var orders = orderDict.Values.ToList();
+            return orders;
         }
 
         private decimal ComputerOrderTotalPerRow(IDataRecord record)
