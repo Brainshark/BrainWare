@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orders.Api.Context;
 using Microsoft.EntityFrameworkCore;
+using Orders.Api.Service;
 
 namespace Orders.Api
 {
@@ -31,7 +32,7 @@ namespace Orders.Api
         {
             services.AddTransient<OrderService>();
             services.AddDbContext<BrainWareContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("BrainWave")));
+                options.UseSqlServer(Configuration.GetConnectionString("BrainWare")));
 
             // Add framework services.
             services.AddMvc();

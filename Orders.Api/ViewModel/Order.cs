@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
-namespace Web.Models
+namespace Orders.Api.ViewModel
 {
     using System.Security.AccessControl;
 
-    public class Order
+    public class OrderVM
     {
         public int OrderId { get; set; }
 
@@ -17,18 +16,18 @@ namespace Web.Models
 
         public decimal OrderTotal { get; set; }
 
-        public List<OrderProduct> OrderProducts { get; set; }
+        public List<OrderProductVM> OrderProducts { get; set; }
 
     }
 
 
-    public class OrderProduct
+    public class OrderProductVM
     {
         public int OrderId { get; set; }
 
         public int ProductId { get; set; }
 
-        public Product Product { get; set; }
+        public ProductVM Product { get; set; }
     
         public int Quantity { get; set; }
 
@@ -36,7 +35,7 @@ namespace Web.Models
 
     }
 
-    public class Product
+    public class ProductVM
     {
         public string Name { get; set; }
 

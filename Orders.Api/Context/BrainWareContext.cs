@@ -13,6 +13,8 @@ namespace Orders.Api.Context
         public virtual DbSet<Orderproduct> Orderproduct { get; set; }
         public virtual DbSet<Product> Product { get; set; }
 
+        public BrainWareContext(DbContextOptions options) : base(options) { }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Company>(entity =>

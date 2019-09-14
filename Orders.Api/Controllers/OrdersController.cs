@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Orders.Api.Model;
 using Orders.Api.Context;
 using Orders.Api.Service;
+using Orders.Api.ViewModel;
 
 namespace Orders.Api.Controllers
 {
@@ -19,10 +20,13 @@ namespace Orders.Api.Controllers
             this._orderService = orderService;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<Order>> GetOrders(int id = 1)
+        [HttpGet("{id:int}")]
+        public List<OrderVM> GetOrders(int id = 1)
         {
-            return await this._orderService.GetOrdersForCompany(id);
+            //await Task.Delay(1000);
+            //return null;
+            //return 10;
+            return this._orderService.GetOrdersForCompany(id);
         }
     }
 }
