@@ -34,6 +34,10 @@ namespace Orders.Api
             services.AddDbContext<BrainWareContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("BrainWare")));
 
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+            });
             // Add framework services.
             services.AddMvc();
         }
@@ -44,6 +48,7 @@ namespace Orders.Api
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseCors(options => options.AllowAnyOrigin());
             app.UseMvc();
         }
     }

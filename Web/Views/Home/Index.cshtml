@@ -13,7 +13,7 @@
     $(document).ready(function () {
         var $orders = $('#orders');
         $.ajax({
-            'url': '/api/order/1',
+            'url': 'http://localhost:56708/api/orders/1',
             'type': 'GET',
             'success': function (data) {
 
@@ -22,13 +22,13 @@
                 if (data) {
                     $.each(data,
                         function(i) {
-                            var $li = $('<li/>').text(this.Description + ' (Total: $' + this.OrderTotal + ')')
+                            var $li = $('<li/>').text(this.description + ' (Total: $' + this.orderTotal + ')')
                                 .appendTo($orderList);
 
                             var $productList = $('<ul/>');
 
-                            $.each(this.OrderProducts, function(j) {
-                                var $li2 = $('<li/>').text(this.Product.Name + ' ('+ this.Quantity +' @@ $' + this.Price + '/ea)')
+                            $.each(this.orderProducts, function(j) {
+                                var $li2 = $('<li/>').text(this.product.name + ' ('+ this.quantity +' @@ $' + this.product.price + '/ea)')
                                     .appendTo($productList);
                             });
 

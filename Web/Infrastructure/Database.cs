@@ -14,7 +14,7 @@ namespace Web.Infrastructure
 
         public Database()
         {
-            _connection = new SqlConnection("Data Source=(LocalDb)\\MSSQLLocalDB;Initial Catalog=BrainWAre;Integrated Security=SSPI;AttachDBFilename=D:\\BrainWare\\Web\\App_Data\\BrainWare.mdf");
+            _connection = new SqlConnection("Server=localhost\\SQLEXPRESS;Database=BrainWare;Trusted_Connection=True;");
 
             _connection.Open();
         }
