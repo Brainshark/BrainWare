@@ -5,81 +5,39 @@ using System.Web;
 
 namespace Web.Infrastructure
 {
+    using System.Collections.ObjectModel;
     using System.Data;
+    using BL.Readers;
     using Models;
 
     public class OrderService
     {
-        public List<Order> GetOrdersForCompany(int CompanyId)
+        public Collection<Order> GetOrdersForCompany(int CompanyId)
         {
-
-            var database = new Database();
-
             // Get the orders
-            var sql1 =
-                "SELECT c.name, o.description, o.order_id FROM company c INNER JOIN [order] o on c.company_id=o.company_id";
-
-            var reader1 = database.ExecuteReader(sql1);
-
-            var values = new List<Order>();
-            
-            while (reader1.Read())
-            {
-                var record1 = (IDataRecord) reader1;
-
-                values.Add(new Order()
-                {
-                    CompanyName = record1.GetString(0),
-                    Description = record1.GetString(1),
-                    OrderId = record1.GetInt32(2),
-                    OrderProducts = new List<OrderProduct>()
-                });
-
-            }
-
-            reader1.Close();
+            OrderReader orderReader = new OrderReader();
+            KeyValuePair<string, object> param = new KeyValuePair<string, object>("@companyId", CompanyId);
+            List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
+            parameters.Add(param);
+            Collection<Order> orders = orderReader.Execute(parameters);
 
             //Get the order products
-            var sql2 =
-                "SELECT op.price, op.order_id, op.product_id, op.quantity, p.name, p.price FROM orderproduct op INNER JOIN product p on op.product_id=p.product_id";
+            OrderProductReader orderProductReader = new OrderProductReader();
+            Collection<OrderProduct> orderProducts = orderProductReader.Execute(parameters);
 
-            var reader2 = database.ExecuteReader(sql2);
-
-            var values2 = new List<OrderProduct>();
-
-            while (reader2.Read())
+            foreach (var order in orders)
             {
-                var record2 = (IDataRecord)reader2;
-
-                values2.Add(new OrderProduct()
+                var ops = orderProducts.Where(orderProduct => orderProduct.OrderId == order.Id);
+                decimal orderTotal = 0;
+                foreach (var orderproduct in ops)
                 {
-                    OrderId = record2.GetInt32(1),
-                    ProductId = record2.GetInt32(2),
-                    Price = record2.GetDecimal(0),
-                    Quantity = record2.GetInt32(3),
-                    Product = new Product()
-                    {
-                        Name = record2.GetString(4),
-                        Price = record2.GetDecimal(5)
-                    }
-                });
-             }
-
-            reader2.Close();
-
-            foreach (var order in values)
-            {
-                foreach (var orderproduct in values2)
-                {
-                    if (orderproduct.OrderId != order.OrderId)
-                        continue;
-
                     order.OrderProducts.Add(orderproduct);
-                    order.OrderTotal = order.OrderTotal + (orderproduct.Price * orderproduct.Quantity);
+                    orderTotal += (orderproduct.Price * orderproduct.Quantity);
                 }
+                order.OrderTotal = orderTotal;
             }
 
-            return values;
+            return orders;
         }
     }
 }
