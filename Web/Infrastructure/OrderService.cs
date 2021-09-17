@@ -1,85 +1,90 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
+using Web.Infrastructure.Util;
+using Web.Models;
 
 namespace Web.Infrastructure
 {
-    using System.Data;
-    using Models;
-
     public class OrderService
     {
-        public List<Order> GetOrdersForCompany(int CompanyId)
+        //This is where an interface would benefit both the database, and the OrderService itself (in the event that we aren't using SQL Server, and to better support mocking frameworks).
+        //I opted to remove direct SQL statements in favor of stored procedures (SQL injection potential, as well as better performance on the SQL side leveraging the plan cache).
+        //I believe we were also fetching all rows (I may be mistaken), and filtering the results in C#, which isn't ideal.
+
+        private static Database db;
+        public OrderService(Database _db)
         {
-
-            var database = new Database();
-
-            // Get the orders
-            var sql1 =
-                "SELECT c.name, o.description, o.order_id FROM company c INNER JOIN [order] o on c.company_id=o.company_id";
-
-            var reader1 = database.ExecuteReader(sql1);
-
-            var values = new List<Order>();
-            
-            while (reader1.Read())
+            db = _db;
+        }
+        
+        public async Task<List<Order>> GetOrdersForCompany(int companyId)
+        {
+            var orders = new List<Order>();
+            try
             {
-                var record1 = (IDataRecord) reader1;
-
-                values.Add(new Order()
+                var par = new Hashtable
                 {
-                    CompanyName = record1.GetString(0),
-                    Description = record1.GetString(1),
-                    OrderId = record1.GetInt32(2),
-                    OrderProducts = new List<OrderProduct>()
-                });
-
-            }
-
-            reader1.Close();
-
-            //Get the order products
-            var sql2 =
-                "SELECT op.price, op.order_id, op.product_id, op.quantity, p.name, p.price FROM orderproduct op INNER JOIN product p on op.product_id=p.product_id";
-
-            var reader2 = database.ExecuteReader(sql2);
-
-            var values2 = new List<OrderProduct>();
-
-            while (reader2.Read())
-            {
-                var record2 = (IDataRecord)reader2;
-
-                values2.Add(new OrderProduct()
+                    { "@CompanyId", companyId }
+                };
+                var dt = await db.GetDataTableAsync("[dbo].[getOrdersByCompanyId]", par);
+                foreach (DataRow r in dt.Rows)
                 {
-                    OrderId = record2.GetInt32(1),
-                    ProductId = record2.GetInt32(2),
-                    Price = record2.GetDecimal(0),
-                    Quantity = record2.GetInt32(3),
-                    Product = new Product()
+                    var order = new Order
                     {
-                        Name = record2.GetString(4),
-                        Price = record2.GetDecimal(5)
-                    }
-                });
-             }
-
-            reader2.Close();
-
-            foreach (var order in values)
-            {
-                foreach (var orderproduct in values2)
-                {
-                    if (orderproduct.OrderId != order.OrderId)
-                        continue;
-
-                    order.OrderProducts.Add(orderproduct);
-                    order.OrderTotal = order.OrderTotal + (orderproduct.Price * orderproduct.Quantity);
+                        CompanyName = r["name"].ToString(),
+                        Description = r["description"].ToString(),
+                        OrderId = r["order_id"].ToInt(),
+                        OrderProducts = new List<OrderProduct>()
+                    };
+                    order.OrderProducts = await GetOrderProducts(order.OrderId);
+                    order.OrderTotal = order.OrderProducts.Sum(x => x.Price * x.Quantity);
+                    orders.Add(order);
                 }
             }
+            catch (Exception ex)
+            {
+                //ideally log exception
+                Console.WriteLine(ex.Message);
+            }
+            return orders;
+        }
 
-            return values;
+        public async Task<List<OrderProduct>> GetOrderProducts(int orderId)
+        {
+            var orderProducts = new List<OrderProduct>();
+            try
+            {
+                var par = new Hashtable
+            {
+                { "@OrderId", orderId }
+            };
+                var dt = await db.GetDataTableAsync("[dbo].[getProductsByOrderId]", par);
+                foreach (DataRow r in dt.Rows)
+                {
+                    orderProducts.Add(new OrderProduct()
+                    {
+                        OrderId = r["order_id"].ToInt(),
+                        ProductId = r["product_id"].ToInt(),
+                        Price = r["opPrice"].ToDec(),
+                        Quantity = r["quantity"].ToInt(),
+                        Product = new Product()
+                        {
+                            Name = r["name"].ToString(),
+                            Price = r["productPrice"].ToDec()
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                //ideally log exception
+                Console.WriteLine(ex.Message);
+            }
+            return orderProducts;
         }
     }
 }

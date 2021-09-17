@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 using System.Web.Http;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using Web.Infrastructure;
+using Web.Models;
 
 namespace Web.Controllers
 {
-    using System.Web.Mvc;
-    using Infrastructure;
-    using Models;
 
-    public class OrderController : ApiController
+    public class OrderController : BaseController
     {
-        [HttpGet]
-        public IEnumerable<Order> GetOrders(int id = 1)
+        [System.Web.Mvc.HttpGet]
+        public async Task<IEnumerable<Order>> GetOrders(int id = 1)
         {
-            var data = new OrderService();
-
-            return data.GetOrdersForCompany(id);
+            var orders = await orderService.GetOrdersForCompany(id);
+            return orders;
         }
     }
 }
