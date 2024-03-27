@@ -13,6 +13,7 @@ import { RouterModule } from '@angular/router';
 export class AppComponent {
   orders: any[] = [];
   year = new Date().getFullYear();
+  title = "web-app"
 
   constructor(http: HttpClient) {
     http.get<any>('/api/order/1').subscribe((orders) => {
