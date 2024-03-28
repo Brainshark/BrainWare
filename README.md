@@ -47,3 +47,14 @@ Change the AttachDbFile name to the full path of the BrainWare.mdf file (located
 - cd .\web-app\
 - npm install
 - npm start
+
+# Changes in BrainWare project
+
+- Refactored to use dependency injection; classes are now registered in builder.Services.
+- Replaced direct database access with Entity Framework.
+- Separated model classes into distinct files.
+- Moved the connection string to application.json.
+- Extracted database querying from OrderService.
+- Replaced the .NET Framework unit test project with a .NET-based project.
+- Added tests for OrderService.
+- Modified the controller endpoint to return ActionResult.
